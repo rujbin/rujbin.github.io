@@ -81,7 +81,7 @@
         /* Main Content */
         .container {
             max-width: 1200px;
-            margin: 2rem auto;
+            margin: 2rem auto 0; /* Geänderte Margin von -6rem zu 2rem */
             padding: 0 2rem;
             position: relative;
         }
@@ -98,28 +98,6 @@
 
         .card:hover {
             transform: translateY(-5px);
-        }
-
-        /* About Section */
-        .about-content {
-            display: flex;
-            gap: 2rem;
-            align-items: start;
-            flex-wrap: wrap;
-            margin-top: 1rem;
-        }
-
-        .about-content img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            flex-shrink: 0;
-        }
-
-        .about-content p {
-            flex: 1;
-            min-width: 300px;
         }
 
         /* Skills Grid */
@@ -223,11 +201,6 @@
             .hero h1 {
                 font-size: 2.5rem;
             }
-
-            .about-content {
-                justify-content: center;
-                text-align: center;
-            }
         }
     </style>
 </head>
@@ -249,13 +222,145 @@
         <section id="about" class="card">
             <h2>Über mich</h2>
             <div class="about-content">
-                <img src="profilbild.jpg" alt="Profilbild">
+                <img src="profilbild.jpg" alt="Profilbild" style="width: 150px; border-radius: 50%; float: left; margin-right: 2rem;">
                 <p>
                     Seit meiner Kindheit bin ich stark von der Welt der IT fasziniert. Diese Leidenschaft hat mich dazu geführt, Fachinformatiker für Systemintegration zu werden. Mit umfangreicher Erfahrung in der Administration und dem Management von IT-Systemen strebe ich stets danach, sichere und effiziente IT-Infrastrukturen zu entwickeln. Mein Fokus liegt auf der Implementierung von Lösungen, die den höchsten Sicherheitsstandards entsprechen und den Anforderungen moderner Unternehmen gerecht werden.
                 </p>
+                <!-- Weitere persönliche Informationen können hier eingefügt werden -->
             </div>
         </section>
 
         <section id="skills" class="card">
             <h2>Meine Skills</h2>
             <div class="skills-grid">
+                <div class="skill">
+                    <i class="fab fa-linux"></i>
+                    <h3>Linux</h3>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 95%"></div>
+                    </div>
+                    <p>Wireguard, Nextcloud, Shell-Scripting</p>
+                </div>
+                
+                <div class="skill">
+                    <i class="fas fa-server"></i>
+                    <h3>Windows Server</h3>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 65%"></div>
+                    </div>
+                    <p>Active Directory, DNS, DHCP, Gruppenrichtlinien</p>
+                </div>
+
+                <div class="skill">
+                    <i class="fas fa-cloud"></i>
+                    <h3>VMware vSphere</h3>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 50%"></div>
+                    </div>
+                    <p>Grundlegende Virtualisierung und Ressourcenmanagement</p>
+                </div>
+
+                <div class="skill">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Cybersecurity</h3>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 80%"></div>
+                    </div>
+                    <p>HTTP Header, HSTS, Kryptografie, Datenschutz</p>
+                </div>
+
+                <!-- Wireguard als eigenes Feld -->
+                <div class="skill">
+                    <i class="fas fa-network-wired"></i>
+                    <h3>Wireguard</h3>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 90%"></div>
+                    </div>
+                    <p>VPN-Setup, Konfiguration, Verwaltung</p>
+                </div>
+
+                <div class="skill">
+                    <i class="fab fa-python"></i>
+                    <h3>Python</h3>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 75%"></div>
+                    </div>
+                    <p>Automatisierung, Skripterstellung, Datenanalyse</p>
+                </div>
+
+                <div class="skill">
+                    <i class="fas fa-robot"></i>
+                    <h3>TensorFlow (KI)</h3>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 70%"></div>
+                    </div>
+                    <p>Modellentwicklung, Training, Implementierung von KI-Lösungen</p>
+                </div>
+
+                <div class="skill">
+                    <i class="fas fa-code"></i>
+                    <h3>C++</h3>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 65%"></div>
+                    </div>
+                    <p>Softwareentwicklung, Systemprogrammierung, Algorithmen</p>
+                </div>
+                <!-- Weitere Skills können hier hinzugefügt werden -->
+            </div>
+        </section>
+
+        <section id="blog" class="card">
+            <h2>Aktuelle Blog Posts</h2>
+            <div class="blog-grid">
+                <article class="post">
+                    <img src="coding.jpg" alt="Coding">
+                    <div class="post-content">
+                        <span class="post-date">20. März 2024</span>
+                        <h3>Mein Weg in die IT-Systemintegration</h3>
+                        <p>Wie ich durch praktische Projekte und kontinuierliches Lernen meine Fähigkeiten im Bereich der Systemintegration entwickelt habe...</p>
+                        <a href="#">Weiterlesen <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+                <!-- Weitere Posts können hier hinzugefügt werden -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="social-links">
+            <a href="#"><i class="fab fa-github"></i></a>
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+            <a href="#"><i class="fas fa-envelope"></i></a>
+        </div>
+        <p>&copy; <span id="year"></span> Rujbin Nassereslam. Alle Rechte vorbehalten.</p>
+    </footer>
+
+    <script>
+        // Automatisches Copyright Jahr
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Smooth Scroll
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // Progress Bar Animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    const progressBar = entry.target.querySelector('.progress-bar');
+                    progressBar.style.width = progressBar.style.width;
+                }
+            });
+        }, { threshold: 0.5 }); // Trigger when 50% of the skill section is visible
+
+        document.querySelectorAll('.skill').forEach(skill => {
+            observer.observe(skill);
+        });
+    </script>
+</body>
+</html>
