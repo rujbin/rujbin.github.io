@@ -174,6 +174,7 @@
             text-align: center;
         }
 
+        /* Entfernte Social Links CSS
         .social-links {
             display: flex;
             gap: 2rem;
@@ -190,6 +191,7 @@
         .social-links a:hover {
             color: var(--accent);
         }
+        */
 
         @media (max-width: 768px) {
             nav ul {
@@ -238,7 +240,7 @@
                     <div class="progress-container">
                         <div class="progress-bar" style="width: 95%"></div>
                     </div>
-                    <p>Wireguard, Nextcloud, Shell-Scripting</p>
+                    <p>Wireguard, Shell-Scripting</p> <!-- "Nextcloud" entfernt -->
                 </div>
                 
                 <div class="skill">
@@ -278,6 +280,16 @@
                     <p>VPN-Setup, Konfiguration, Verwaltung</p>
                 </div>
 
+                <!-- Neuer Nextcloud Skill -->
+                <div class="skill">
+                    <i class="fas fa-cloud-upload-alt"></i> <!-- Alternativer Icon für Nextcloud -->
+                    <h3>Nextcloud</h3>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 85%"></div>
+                    </div>
+                    <p>Installation, Konfiguration, Verwaltung und Erweiterung</p>
+                </div>
+
                 <div class="skill">
                     <i class="fab fa-python"></i>
                     <h3>Python</h3>
@@ -310,11 +322,13 @@
     </main>
 
     <footer>
+        <!-- Social Links entfernt
         <div class="social-links">
             <a href="#"><i class="fab fa-github"></i></a>
             <a href="#"><i class="fab fa-linkedin"></i></a>
             <a href="#"><i class="fas fa-envelope"></i></a>
         </div>
+        -->
         <p>&copy; <span id="year"></span> Rujbin Nassereslam. Alle Rechte vorbehalten.</p>
     </footer>
 
