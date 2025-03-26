@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ownership in Rust - Erklärt wie ein Lehrer</title>
+    <style>
+        :root {
+            --primary: #e06c75;
+            --secondary: #61afef;
+            --accent: #98c379;
+            --bg: #282c34;
+            --text: #abb2bf;
+            --header: #e5c07b;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--bg);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 20px;
+        }
+        
+        h1 {
+            color: var(--header);
+            font-size: 2.5em;
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin-top: 30px;
+            border-left: 4px solid var(--secondary);
+            padding-left: 10px;
+        }
+        
+        h3 {
+            color: var(--accent);
+        }
+        
+        .rust-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .rules {
+            background-color: rgba(97, 175, 239, 0.1);
+            border-left: 4px solid var(--secondary);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .example {
+            background-color: rgba(40, 44, 52, 0.8);
+            border: 1px solid #3e4451;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        .correct {
+            border-left: 4px solid var(--accent);
+        }
+        
+        .error {
+            border-left: 4px solid var(--primary);
+        }
+        
+        .summary {
+            background-color: rgba(229, 192, 123, 0.1);
+            padding: 20px;
+            border-radius: 5px;
+            margin: 30px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            border: 1px solid #3e4451;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: rgba(97, 175, 239, 0.2);
+            color: var(--secondary);
+        }
+        
+        tr:nth-child(even) {
+            background-color: rgba(171, 178, 191, 0.05);
+        }
+        
+        .exercise {
+            background-color: rgba(152, 195, 121, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 30px 0;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #3e4451;
+            color: #5c6370;
+        }
+        
+        .emoji {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="rust-icon">🦀</div>
+        <h1>Ownership in Rust</h1>
+        <p>Erklärt wie ein Lehrer mit vielen Beispielen</p>
+    </header>
+
+    <section>
+        <p>Rusts <strong>Ownership-Modell</strong> ist ein einzigartiges Konzept, das Speichersicherheit ohne Garbage Collector garantiert. Es hilft, häufige Fehler wie <strong>Dangling Pointer</strong>, <strong>Memory Leaks</strong> oder <strong>Data Races</strong> zu vermeiden.</p>
+    </section>
+
+    <section>
+        <h2>1. Die 3 Goldenen Regeln des Ownership</h2>
+        <div class="rules">
+            <ol>
+                <li><strong>Jeder Wert hat einen Besitzer (Owner).</strong></li>
+                <li><strong>Es kann immer nur einen Besitzer geben.</strong></li>
+                <li><strong>Wenn der Besitzer den Geltungsbereich (Scope) verlässt, wird der Wert gelöscht (Dropped).</strong></li>
+            </ol>
+        </div>
+    </section>
+
+    <section>
+        <h2>2. Einfache Beispiele zum Verstehen</h2>
+        
+        <h3>Beispiel 1: Ein String und sein Besitzer</h3>
+        <div class="example correct">
+            <pre><code>fn main() {
+    let s = String::from("Hallo"); // `s` ist der Besitzer des Strings.
+    println!("{}", s); // Funktioniert!
+} // Hier verlässt `s` den Scope → Der String wird gelöscht.</code></pre>
+        </div>
+
+        <h3>Beispiel 2: Ownership wird übertragen (Move-Semantik)</h3>
+        <div class="example correct">
+            <pre><code>fn main() {
+    let s1 = String::from("Hallo");
+    let s2 = s1; // Der Besitz geht von `s1` auf `s2` über.
+    
+    // println!("{}", s1); // FEHLER! `s1` ist nicht mehr der Besitzer.
+    println!("{}", s2); // Funktioniert!
+}</code></pre>
+        </div>
+        <p>Nach <code>let s2 = s1</code> ist <code>s1</code> <strong>ungültig</strong>, weil der Ownership <strong>verschoben</strong> wurde.</p>
+
+        <h3>Beispiel 3: Funktionen und Ownership</h3>
+        <div class="example correct">
+            <pre><code>fn gebe_besitz(s: String) -> String {
+    println!("Ich nehme den String: {}", s);
+    s // Ich gebe den Besitz zurück.
+}
+
+fn main() {
+    let s1 = String::from("Hallo");
+    let s2 = gebe_besitz(s1); // `s1` gibt Ownership ab.
+    
+    // println!("{}", s1); // FEHLER! `s1` ist nicht mehr gültig.
+    println!("{}", s2); // Funktioniert!
+}</code></pre>
+        </div>
+        <ul>
+            <li>Wenn eine Funktion einen Wert übernimmt, wird der Ownership <strong>übertragen</strong>.</li>
+            <li>Wenn wir <code>s</code> zurückgeben, können wir den Besitz weitergeben.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>3. Borrowing (Ausleihen) – Referenzen nutzen</h2>
+        <p>Manchmal wollen wir Ownership <strong>nicht übertragen</strong>, sondern nur <strong>ausleihen</strong>. Dafür gibt es <strong>Referenzen (<code>&</code>)</strong>.</p>
+
+        <h3>Beispiel 4: Unveränderbare Referenz</h3>
+        <div class="example correct">
+            <pre><code>fn berechne_laenge(s: &String) -> usize {
+    s.len() // Wir lesen den String, ohne ihn zu besitzen.
+}
+
+fn main() {
+    let s1 = String::from("Hallo");
+    let laenge = berechne_laenge(&s1); // Wir leihen `s1` aus.
+    
+    println!("'{}' hat Länge {}", s1, laenge); // `s1` ist noch da!
+}</code></pre>
+        </div>
+
+        <h3>Beispiel 5: Veränderbare Referenz (<code>&mut</code>)</h3>
+        <div class="example correct">
+            <pre><code>fn aendere_string(s: &mut String) {
+    s.push_str(", Welt!");
+}
+
+fn main() {
+    let mut s = String::from("Hallo");
+    aendere_string(&mut s); // Wir leihen `s` veränderbar aus.
+    
+    println!("{}", s); // Ausgabe: "Hallo, Welt!"
+}</code></pre>
+        </div>
+        <p><strong>Aber Achtung!</strong> Nur <strong>eine veränderbare Referenz</strong> pro Variable gleichzeitig!</p>
+        <div class="example error">
+            <pre><code>let mut s = String::from("Hallo");
+let r1 = &mut s;
+// let r2 = &mut s; // FEHLER! Nur eine &mut Referenz erlaubt.</code></pre>
+        </div>
+    </section>
+
+    <section>
+        <h2>4. Die "Dangling Reference"-Problematik</h2>
+        <p>Rust verhindert <strong>Dangling Pointer</strong> (Zeiger auf ungültige Daten) zur Compile-Zeit.</p>
+
+        <h3>❌ Fehlerhaft (würde in C funktionieren, aber unsicher sein):</h3>
+        <div class="example error">
+            <pre><code>fn dangle() -> &String {
+    let s = String::from("Hallo");
+    &s // Wir geben eine Referenz auf `s` zurück...
+} // ABER `s` wird hier gelöscht! → Dangling Reference!</code></pre>
+        </div>
+
+        <h3>✅ Korrekte Lösung:</h3>
+        <div class="example correct">
+            <pre><code>fn keine_dangle() -> String {
+    let s = String::from("Hallo");
+    s // Ownership wird übergeben.
+}</code></pre>
+        </div>
+    </section>
+
+    <section>
+        <h2>5. Zusammenfassung <span class="emoji">🚀</span></h2>
+        <div class="summary">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Konzept</th>
+                        <th>Beispiel</th>
+                        <th>Beschreibung</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Ownership</strong></td>
+                        <td><code>let s = String::from("Hallo");</code></td>
+                        <td>Nur ein Besitzer pro Wert.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Move-Semantik</strong></td>
+                        <td><code>let s2 = s1;</code></td>
+                        <td>Ownership wird übertragen.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Borrowing (<code>&</code>)</strong></td>
+                        <td><code>berechne_laenge(&s1);</code></td>
+                        <td>Unveränderbare Ausleihe.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mutable Borrow (<code>&mut</code>)</strong></td>
+                        <td><code>aendere_string(&mut s);</code></td>
+                        <td>Veränderbare Ausleihe (nur einmal!).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Lifetime</strong></td>
+                        <td><code>fn f<'a>(x: &'a i32) -> &'a i32</code></td>
+                        <td>Garantiert, dass Referenzen gültig bleiben.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Merksätze:</h3>
+            <ul>
+                <li><strong>"Ein Wert, ein Besitzer."</strong></li>
+                <li><strong>"Nur eine <code>&mut</code>-Referenz oder mehrere <code>&</code>-Referenzen gleichzeitig."</strong></li>
+                <li><strong>"Wenn der Scope endet, wird der Wert gelöscht."</strong></li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="exercise">
+        <h2>Lust auf eine kleine Übung? <span class="emoji">🏋️‍♂️</span></h2>
+        <div class="example">
+            <pre><code>fn main() {
+    let x = String::from("Rust");
+    let y = x;
+    println!("{}", x); // Was passiert hier?
+}</code></pre>
+        </div>
+        <p><strong>→ Antwort:</strong> Das gibt einen <strong>Compile-Fehler</strong>, weil <code>x</code> den Ownership an <code>y</code> verloren hat!</p>
+    </section>
+
+    <footer>
+        <p>Viel Erfolg beim Rust-Lernen! <span class="emoji">🦀</span></p>
+    </footer>
+</body>
+</html>
