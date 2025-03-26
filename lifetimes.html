@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lifetimes in Rust - Erklärt wie ein Lehrer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #e74c3c;
+            border-bottom: 2px solid #e74c3c;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #3498db;
+            margin-top: 25px;
+        }
+        code {
+            background-color: #f0f0f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        pre {
+            background-color: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            tab-size: 4;
+        }
+        .note {
+            background-color: #fffde7;
+            border-left: 4px solid #ffd600;
+            padding: 10px 15px;
+            margin: 15px 0;
+        }
+        .summary {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin-top: 30px;
+        }
+        .emoji {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lifetimes in Rust <span class="emoji">🎓</span></h1>
+    
+    <p>Lifetimes (Lebensdauern) in Rust sind ein Konzept, das sicherstellt, dass <strong>Referenzen</strong> (also "Verweise" auf Daten) immer <strong>gültig</strong> sind. Sie helfen dem Compiler zu verstehen, wie lange eine Referenz leben darf, bevor der Speicher, auf den sie zeigt, ungültig wird.</p>
+    
+    <p>Stell dir Lifetimes wie eine <strong>Garantie</strong> vor:<br>
+    <em>"Solange diese Referenz existiert, sind die dahinterliegenden Daten auch noch da!"</em></p>
+    
+    <h2>Warum brauchen wir Lifetimes? <span class="emoji">🤔</span></h2>
+    <p>Rust hat <strong>keinen Garbage Collector</strong> (wie Java oder Python) und will <strong>keine dangling references</strong> (hängende Referenzen) zulassen. Beispiel:</p>
+    
+    <pre><code>fn main() {
+    let r;
+    {
+        let x = 5;      // `x` lebt nur in diesem Block
+        r = &x;        // `r` zeigt auf `x`
+    }                  // `x` stirbt hier! 💀
+    println!("{}", r); // Fehler: `r` zeigt auf ungültige Daten!
+}</code></pre>
+    
+    <p>Der Compiler sagt:<br>
+    <strong>> `x` does not live long enough</strong> – weil `r` länger lebt als `x`.</p>
+    
+    <p>Lifetimes verhindern genau solche Fehler!</p>
+    
+    <h2>Wie sehen Lifetimes aus? <span class="emoji">🔍</span></h2>
+    <p>Lifetimes werden mit <strong>`'a`</strong> (oder ähnlichen Namen) annotiert. Sie sagen dem Compiler:<br>
+    <em>"Diese Referenz muss mindestens so lange leben wie `'a`."</em></p>
+    
+    <h3>Beispiel: Funktion mit Lifetime-Parameter</h3>
+    <pre><code>fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+    if x.len() > y.len() { x } else { y }
+}</code></pre>
+    
+    <ul>
+        <li><code>&lt;'a&gt;</code>: Definiert eine Lifetime <code>'a</code></li>
+        <li><code>x: &'a str</code>: <code>x</code> muss mindestens <code>'a</code> leben</li>
+        <li><code>y: &'a str</code>: <code>y</code> muss mindestens <code>'a</code> leben</li>
+        <li>Rückgabewert <code>&'a str</code>: Das Ergebnis lebt auch nur so lange wie <code>'a</code></li>
+    </ul>
+    
+    <h3>Aufruf von <code>longest</code></h3>
+    <pre><code>fn main() {
+    let s1 = String::from("lange Zeichenkette");
+    let result;
+    {
+        let s2 = String::from("kurz");
+        result = longest(s1.as_str(), s2.as_str()); // OK, solange `result` nicht länger lebt als `s2`
+    } // `s2` stirbt hier
+    println!("{}", result); // Fehler! `result` wäre ungültig.
+}</code></pre>
+    
+    <p>Der Compiler prüft:</p>
+    <ul>
+        <li><code>result</code> darf nicht länger leben als die kürzeste der beiden Eingaben (<code>s2</code>)</li>
+        <li>Da <code>s2</code> im inneren Block stirbt, wäre <code>result</code> danach ungültig → <strong>Compilerfehler!</strong> ✅</li>
+    </ul>
+    
+    <h2>Drei Regeln für Lifetimes (Elision) <span class="emoji">📜</span></h2>
+    <p>Manchmal kann Rust Lifetimes <strong>automatisch ableiten</strong>. Diese Regeln helfen:</p>
+    <ol>
+        <li><strong>Jede Referenz bekommt einen eigenen Lifetime-Parameter.</strong><br>
+            <code>fn foo(x: &i32)</code> → <code>fn foo&lt;'a&gt;(x: &'a i32)</code></li>
+        <li><strong>Wenn es genau eine Eingabe-Referenz gibt, bekommt der Rückgabewert dieselbe Lifetime.</strong><br>
+            <code>fn foo(x: &str) -> &str</code> → <code>fn foo&lt;'a&gt;(x: &'a str) -> &'a str</code></li>
+        <li><strong>Bei <code>&self</code> oder <code>&mut self</code> (Methoden) bekommt der Rückgabewert die Lifetime von <code>self</code>.</strong></li>
+    </ol>
+    
+    <div class="note">
+        <p>Falls Rust nicht ableiten kann, <strong>musst du Lifetimes explizit angeben!</strong></p>
+    </div>
+    
+    <h2>Wann braucht man Lifetimes? <span class="emoji">⏱️</span></h2>
+    <ul>
+        <li>Bei <strong>Structs mit Referenzen</strong>
+            <pre><code>struct Book<'a> {
+    title: &'a str, // `title` muss länger leben als das `Book`!
+}</code></pre>
+        </li>
+        <li>Bei <strong>Funktionen mit mehreren Referenzen</strong></li>
+        <li>Bei <strong>komplexen Szenarien</strong>, wo der Compiler Hilfe braucht</li>
+    </ul>
+    
+    <div class="summary">
+        <h2>Zusammenfassung <span class="emoji">📝</span></h2>
+        <ul>
+            <li>Lifetimes (<code>'a</code>) garantieren, dass <strong>Referenzen sicher</strong> sind</li>
+            <li>Sie verhindern <strong>dangling references</strong></li>
+            <li>Manchmal leitet Rust sie automatisch ab (<strong>Elision</strong>)</li>
+            <li>Bei Structs mit Referenzen <strong>muss</strong> man sie angeben</li>
+        </ul>
+        <p>Lifetimes sind anfangs verwirrend, aber mit der Zeit versteht man sie besser! <span class="emoji">🚀</span></p>
+    </div>
+    
+    <div class="note">
+        <p><span class="emoji">💡</span> <strong>Tipp:</strong> Der Compiler gibt oft gute Hinweise – lese die Fehlermeldungen genau!</p>
+    </div>
+    
+    <p style="text-align: center; margin-top: 30px; font-style: italic;">Fragen? Gerne! <span class="emoji">😊</span></p>
+</body>
+</html>
